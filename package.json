@@ -1,0 +1,24 @@
+{
+  "name": "gridfs-express",
+  "version": "0.0.0",
+  "description": "node package to mount a gridfs API on an express router",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josp70/gridfs-express.git"
+  },
+  "keywords": [
+    "mongodb",
+    "gridfs",
+    "express"
+  ],
+  "author": "Jorge Suit <josp.jorge@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/josp70/gridfs-express/issues"
+  },
+  "homepage": "https://github.com/josp70/gridfs-express#readme"
+}
