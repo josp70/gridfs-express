@@ -78,6 +78,16 @@ Other members which are optional are:
   stored within the metadata for the file.
 * `getOtherMetadata`: it is a function which should return an object,
   this object will be stored within the metadata for the file.
+  
+## http examples
+
+```
+http --form POST localhost:3000/api/gridfs/upload file@sample_file.zip
+```
+
+```
+http GET localhost:3000/api/gridfs/download?filename=sample_file.zip
+```
 
 ## Tests
 
