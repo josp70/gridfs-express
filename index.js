@@ -1,3 +1,4 @@
+const tmp = require('tmp');
 const dot = require('dot-object');
 const formidable = require('formidable');
 const mongodb = require('mongodb');
@@ -14,6 +15,11 @@ function defaultGetOtherMetadata() {
 }
 
 let config = {};
+
+function createTempDir() {
+    const tmpobj = tmp.dirSync({ template: '/tmp/gridfs-XXXXXX' });
+    config.dirUploads = tmpobj.name;
+};
 
 function buildBucket(req, filename) {
     const bucket = new mongodb.GridFSBucket(config.getDb(), {
@@ -62,6 +68,9 @@ module.exports = function(router, options) {
     if (typeof config.getOtherMetadata !== 'function') {
 	throw new Error('options.getOtherMetadata must be a function');	
     }
+
+    createTempDir();
+    
     router.use(function(req, res, next) {
 	if(req.query.fs == null) {
 	    if( config.fsCollections.length===1 ) {
@@ -91,7 +100,7 @@ module.exports = function(router, options) {
 	const form = new formidable.IncomingForm();
 
 	// store all uploads in the /uploads directory
-	form.uploadDir = path.join(__dirname, '/uploads');
+	form.uploadDir = config.dirUploads;
 
 	let fileUploaded = [];
 

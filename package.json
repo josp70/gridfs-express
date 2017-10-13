@@ -1,6 +1,6 @@
 {
   "name": "gridfs-express",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "node package to mount a gridfs API on an express router",
   "main": "index.js",
   "scripts": {
@@ -30,6 +30,7 @@
     "formidable": "^1.1.1",
     "fs": "0.0.1-security",
     "mongodb": "^2.2.31",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "tmp": "0.0.33"
   }
 }
