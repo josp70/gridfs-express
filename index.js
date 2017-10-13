@@ -27,7 +27,7 @@ function buildBucket(req, filename) {
     });
     const metadata = config.getKeyMetadata(req);
     const keyMetadata = Object.keys(metadata).length > 0 ? {
-	metadata: config.getKeyMetadata(req)
+	metadata: metadata
     } : {};
     const filter = Object.assign(dot.dot(keyMetadata), {
 	"filename": filename
@@ -125,9 +125,9 @@ module.exports = function(router, options) {
 		id = ObjectID();
             }
 	    const otherMetadata = config.getOtherMetadata(req);
-	    const fullMetadata = Object.assign({}, otherMetadata, keyMetadata.metadata);
+	    const metadata = Object.assign({}, otherMetadata, keyMetadata.metadata);
             fs.createReadStream(file.path).
-		pipe(bucket.openUploadStreamWithId(id, file.name, fullMetadata)).on('error', function(error) {
+		pipe(bucket.openUploadStreamWithId(id, file.name, {metadata:metadata})).on('error', function(error) {
 		    fs.unlink(file.path, function (err) {
 			if(err) {
 			    console.log("error while piping => fs.unlink ");

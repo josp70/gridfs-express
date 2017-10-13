@@ -20,7 +20,12 @@ mongodb.MongoClient.connect(url, function(err, database) {
 const routerAPI = express.Router();
 
 gridfs(routerAPI, {
-    getDb: () => {return db}
+    getDb: () => {return db},
+    getKeyMetadata: (req) => {
+	return {
+	    key: "my_key_collection"
+	};
+    }
 });
 
 app.use('/api/gridfs', routerAPI);
