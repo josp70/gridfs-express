@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/josp70/gridfs-express.git"
+    "url": "https://gitlab.com/jorge.suit/gridfs-express.git"
   },
   "keywords": [
     "mongodb",
@@ -18,9 +18,9 @@
   "author": "Jorge Suit <josp.jorge@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/josp70/gridfs-express/issues"
+    "url": "https://gitlab.com/jorge.suit/gridfs-express/issues"
   },
-  "homepage": "https://github.com/josp70/gridfs-express#readme",
+  "homepage": "https://gitlab.com/jorge.suit/gridfs-express",
   "devDependencies": {
     "chakram": "^1.5.0"
   },
