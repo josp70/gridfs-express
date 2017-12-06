@@ -1,5 +1,6 @@
 gridfs-express
 =========
+![build status](https://gitlab.com/jorge.suit/gridfs-express/badges/master/build.svg)
 
 Module to configure an express router in order to upload/download
 files to/from a modgodb grid.
