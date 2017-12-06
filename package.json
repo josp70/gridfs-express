@@ -24,7 +24,8 @@
   "homepage": "https://gitlab.com/jorge.suit/gridfs-express",
   "devDependencies": {
     "chakram": "^1.5.0",
-    "eslint": "^4.12.1"
+    "eslint": "^4.12.1",
+    "mocha": "^4.0.1"
   },
   "dependencies": {
     "dot-object": "^1.7.0",
