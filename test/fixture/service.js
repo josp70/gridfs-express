@@ -4,7 +4,7 @@ const app = express();
 
 const gridfs = require('../../index');
 
-const dburl = 'mongodb://localhost:27017/gridfs_fixture';
+const dburl = process.env.MONGO_URL || 'mongodb://localhost:27017/gridfs_fixture';
 
 let db = null;
 
@@ -19,6 +19,7 @@ app.use('/api/gridfs', routerAPI);
 let server = null;
 
 exports.app = app;
+
 exports.getEndPoint = () => `http://localhost:${server.address().port}/api/gridfs`;
 
 exports.start = () => mongodb.MongoClient.connect(dburl)

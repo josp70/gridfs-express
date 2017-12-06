@@ -87,8 +87,6 @@ describe('USER-AUTH-JSONRPC', () => {
     it('return 200 on POST /api/gridfs/upload with multiform', () => {
       const file = path.resolve(__dirname, './fixture/data/sample_file.txt');
 
-      console.log(file);
-
       /* eslint no-void: 0 */
       const response = chakram.post(`${url}/upload`, void 0, {
         formData: {file: fs.createReadStream(file)},
@@ -104,7 +102,7 @@ describe('USER-AUTH-JSONRPC', () => {
         uploaded: []
       });*/
       after(() => {
-        console.log(response.valueOf().body);
+        // console.log(response.valueOf().body);
       });
       return chakram.wait();
 
