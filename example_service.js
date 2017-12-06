@@ -4,28 +4,27 @@ const app = express();
 
 const gridfs = require('./index');
 
-const url = "mongodb://localhost:27017/gridfs_test";
+const url = 'mongodb://localhost:27017/gridfs_test';
 
-let db;
+let db = null;
 
-mongodb.MongoClient.connect(url, function(err, database) {
-    if(err) throw err;
+mongodb.MongoClient.connect(url, (err, database) => {
+  if (err) {
+    throw err;
+  }
 
-    db = database;
-    // Start the application after the database connection is ready
-    app.listen(3000);
-    console.log("Listening on port 3000");
+  db = database;
+  // Start the application after the database connection is ready
+  const port = 3000;
+
+  app.listen(port);
+  console.log('Listening on port 3000');
 });
 
-const routerAPI = express.Router();
+const routerAPI = new express.Router();
 
 gridfs(routerAPI, {
-    getDb: () => {return db},
-    getKeyMetadata: (req) => {
-	return {
-	    key: "my_key_collection"
-	};
-    }
+  getDb: () => db
 });
 
 app.use('/api/gridfs', routerAPI);
