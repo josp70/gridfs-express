@@ -93,14 +93,13 @@ describe('USER-AUTH-JSONRPC', () => {
         headers: {'Content-Type': 'multipart/form-data'}
       });
 
-      /*
       expect(response).to.have.status(HTTP200);
       expect(response)
       .to.comprise
       .json({
         success: true,
-        uploaded: []
-      });*/
+        uploaded: ['sample_file.txt']
+      });
       after(() => {
         // console.log(response.valueOf().body);
       });
