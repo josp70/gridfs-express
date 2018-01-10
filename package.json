@@ -4,8 +4,8 @@
   "description": "node package to mount a gridfs API on an express router",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test",
-    "lint": "eslint . test/**"
+    "test": "nyc mocha ./test",
+    "lint": "eslint *.js test/**"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,8 @@
   "devDependencies": {
     "chakram": "^1.5.0",
     "eslint": "^4.12.1",
-    "mocha": "^4.0.1"
+    "mocha": "^4.0.1",
+    "nyc": "^11.4.1"
   },
   "dependencies": {
     "dot-object": "^1.7.0",

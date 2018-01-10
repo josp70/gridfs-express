@@ -106,6 +106,32 @@ describe('USER-AUTH-JSONRPC', () => {
       return chakram.wait();
 
     });
+
+    it('return 200 on POST the same file repeated', () => {
+      const file = path.resolve(__dirname, './fixture/data/sample_file.txt');
+
+      /* eslint no-void: 0 */
+      const response = chakram.post(`${url}/upload`, void 0, {
+        formData: {
+          file1: fs.createReadStream(file),
+          file2: fs.createReadStream(file)
+        },
+        headers: {'Content-Type': 'multipart/form-data'}
+      });
+
+      expect(response).to.have.status(HTTP200);
+      expect(response)
+      .to.comprise
+      .json({
+        success: true,
+        uploaded: ['sample_file.txt']
+      });
+      after(() => {
+        // console.log(response.valueOf().body);
+      });
+      return chakram.wait();
+
+    });
   });
 
   describe('DOWNLOAD', () => {
@@ -139,11 +165,10 @@ describe('USER-AUTH-JSONRPC', () => {
       return chakram.wait();
     });
 
-    it('return 200 & success on GET /api/gridfs/download no filename query', () => {
+    it('return 200 & success on GET /api/gridfs/download', () => {
       const response = chakram.get(`${url}/download?filename=sample_file.txt`);
 
       expect(response).to.have.status(HTTP200);
-      // expect(response).to.equal('hola');
 
       after(() => {
         // console.log(response.valueOf().body);
