@@ -1,6 +1,7 @@
 const express = require('express');
 const mongodb = require('mongodb');
 const app = express();
+const expressListRoutes = require('express-list-routes');
 
 const gridfs = require('../../index');
 
@@ -27,6 +28,7 @@ exports.start = () => mongodb.MongoClient.connect(dburl)
     db = database;
     server = app.listen(0, () => {
       console.log(`server listen on ${server.address().port}`);
+      expressListRoutes({prefix: '/api/gridfs'}, 'API:', routerAPI);
       app.emit('ready', null);
     });
     exports.server = server;
