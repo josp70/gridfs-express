@@ -53,7 +53,7 @@ describe('USER-AUTH-JSONRPC', () => {
 
       expect(response).to.have.status(HTTP403);
       after(() => {
-        // console.log(response.valueOf().body);
+        console.log(response.valueOf().body);
       });
       return chakram.wait();
     });
@@ -175,6 +175,27 @@ describe('USER-AUTH-JSONRPC', () => {
       });
       return chakram.wait().then(() => {
         expect(response.valueOf().body).to.equal('hello gridfs');
+      });
+    });
+  });
+
+  describe('LIST', () => {
+    it('return 200 on GET /api/gridfs/list', () => {
+      const response = chakram.get(`${url}/list`);
+
+      expect(response).to.have.status(HTTP200);
+      after(() => {
+        // console.log(response.valueOf().body);
+      });
+      return chakram.wait().then(() => {
+        const {body} = response.valueOf();
+
+        console.log(body);
+        expect(body).to.have.keys([
+          'success',
+          'files'
+        ]);
+        expect(body.files).to.be.a('array');
       });
     });
   });
