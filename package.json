@@ -1,11 +1,14 @@
 {
   "name": "gridfs-express",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "node package to mount a gridfs API on an express router",
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha ./test",
-    "lint": "eslint *.js api/** test/**"
+    "lint": "eslint *.js api/** test/**",
+    "preversion": "npm run lint && npm test",
+    "version": "echo 'preversion passed'",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",

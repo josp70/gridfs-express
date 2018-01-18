@@ -1,9 +1,10 @@
 const tmp = require('tmp');
 const state = require('./api/state');
 const utils = require('./api/utils');
-const upload = require('./api/upload');
-const download = require('./api/download');
-const list = require('./api/list');
+const apiUpload = require('./api/upload');
+const apiDownload = require('./api/download');
+const apiList = require('./api/list');
+const apiDelete = require('./api/delete');
 
 function defaultGetKeyMetadata() {
   return {};
@@ -63,9 +64,8 @@ module.exports = (router, options) => {
 
   createTempDir();
 
-  upload.post(router);
-
-  download.get(router);
-
-  list.get(router);
+  apiUpload.define(router);
+  apiDownload.define(router);
+  apiList.define(router);
+  apiDelete.define(router);
 };

@@ -1,19 +1,11 @@
 const gridBucket = require('./bucket');
-const utils = require('./utils');
 const paramFs = require('./param-fs');
+const paramFilename = require('./param-filename');
 
-const HTTP403 = 403;
-const HTTP404 = 404;
+const {HTTP404} = require('./constants');
 
-function get(router) {
-  router.get('/download', paramFs.middleware, (req, res) => {
-    if (!utils.isValue(req.query.filename)) {
-      return res.status(HTTP403).json({
-        success: false,
-        message: 'missing filename query parameter'
-      });
-    }
-
+function define(router) {
+  router.get('/download', paramFs.middleware, paramFilename.middleware, (req, res) => {
     const [
       bucket,
       keyMetadata,
@@ -22,11 +14,11 @@ function get(router) {
 
     return cursor.next().then((doc) => {
       if (doc === null) {
-        return res.status(HTTP404).json({
+        return res.status(HTTP404).json(Object.assign({
           success: false,
-          message: `file '${req.query.filename}' not found`,
-          data: keyMetadata
-        });
+          message: 'file  not found',
+          filename: req.query.filename
+        }, keyMetadata));
       }
       res.set('Content-Disposition', `attachment; filename=${req.query.filename}`);
 
@@ -39,4 +31,4 @@ function get(router) {
   });
 }
 
-exports.get = get;
+exports.define = define;

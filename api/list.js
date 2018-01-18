@@ -1,7 +1,7 @@
 const paramFs = require('./param-fs');
 const gridBucket = require('./bucket');
 
-function get(router) {
+function define(router) {
   router.get('/list', paramFs.middleware, (req, res) => {
     const [, , cursor] = gridBucket.build(req);
 
@@ -14,4 +14,4 @@ function get(router) {
   });
 }
 
-exports.get = get;
+exports.define = define;

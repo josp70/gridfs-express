@@ -12,7 +12,13 @@ let db = null;
 const routerAPI = new express.Router();
 
 gridfs(routerAPI, {
-  getDb: () => db
+  getDb: () => db,
+  getKeyMetadata: (req) => ({id: req.query.id}),
+  getOtherMetadata: (req) => ({tag: req.query.tag}),
+  fsCollections: [
+    'input',
+    'output'
+  ]
 });
 
 app.use('/api/gridfs', routerAPI);
