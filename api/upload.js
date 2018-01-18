@@ -31,18 +31,12 @@ function gridfsInsert(req, file) {
       .pipe(bucket.openUploadStreamWithId(id, file.name, {metadata}))
       .on('error', (errorPipe) => {
         console.log(errorPipe);
-        fs.unlink(file.path, (err) => {
-          if (err) {
-            console.log('error while piping => fs.unlink ');
-          }
+        fs.unlink(file.path, () => {
           reject(errorPipe);
         });
       })
       .on('finish', () => {
-        fs.unlink(file.path, (err) => {
-          if (err) {
-            console.log('error on pipe finished => fs.unlink ');
-          }
+        fs.unlink(file.path, () => {
           resolve(file.name);
         });
       });
@@ -50,7 +44,7 @@ function gridfsInsert(req, file) {
   });
 }
 
-function post(router) {
+function define(router) {
   router.post('/upload', paramFs.middleware, (req, res) => {
 
     // create an incoming form object
@@ -95,4 +89,4 @@ function post(router) {
   });
 }
 
-exports.post = post;
+exports.define = define;

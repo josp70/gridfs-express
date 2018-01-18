@@ -1,7 +1,6 @@
 const utils = require('./utils');
 const state = require('./state');
-
-const HTTP403 = 403;
+const {HTTP400} = require('./constants');
 
 exports.middleware = (req, res, next) => {
   if (!utils.isValue(req.query.fs)) {
@@ -9,7 +8,7 @@ exports.middleware = (req, res, next) => {
 
       [req.query.fs] = state.fsCollections;
     } else {
-      return res.status(HTTP403).json({
+      return res.status(HTTP400).json({
         success: false,
         message: `missing query parameter fs, must take one of the values ${state.fsCollections}`
       });
@@ -18,7 +17,7 @@ exports.middleware = (req, res, next) => {
   if (state.fsCollections.includes(req.query.fs)) {
     return next();
   }
-  return res.status(HTTP403).json({
+  return res.status(HTTP400).json({
       success: false,
       message: `invalid query parameter fs=${req.query.fs} must be one of ${state.fsCollections}`
     });

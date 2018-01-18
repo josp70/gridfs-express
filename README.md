@@ -41,24 +41,26 @@ gridfs(routerAPI, {
 app.use('/api/gridfs', routerAPI);
 ```
 
-When we invoke `gridfs` on an express router two endpoint are defined
-for that router:
+When we invoke `gridfs` on an express router the following endpoints
+are defined for that router:
 
-* POST /upload: the attached files are uploaded to the gridfs. It is
+* `POST /upload`: the attached files are uploaded to the gridfs. It is
   possible to specify a collection name in the query parameter `fs`
   and a key fields to used when inserting the file, this allow to
   upload the same filename if different keys are provided.
-
-* GET /download retrieve the file given the query parameters
-  `filename` and `fs`. 
+* `GET /download`: retrieve the file given the query parameters
+  `filename` and `fs`.
+* `GET /list`: list the files uploaded
+* `DELETE /delete`: remove from the gridfs the file provided in query
+  parameters `filename` and `fs`.
   
-It is up to the service to compute a key object to diffentiate files
+It is up to the service to compute a key object to differentiate files
 with the same name, this can be normally compute form the request
 (query parameters or JWT)
 
 ## Options
 
-The second arguemtn to the function `gridfs` is an object with options
+The second arguement to the function `gridfs` is an object with options
 to conigure the endpoints. It is required to provide a function member
 to get the mongodb connection:
 
@@ -70,24 +72,53 @@ to get the mongodb connection:
 
 Other members which are optional are:
 
-* `fsCollection`: it is and array of string with allowed collection
+* `fsCollections`: it is and array of string contained the allowed collection
   names to be used in the query parameter `fs`. This array is used to
-  validate the query paramet `fs`.
-* `getKeyMetadata`: it is a function which should return object. This
-  object will be associated to the file in the collection. The
+  validate the query parameter `fs`.
+* `getKeyMetadata`: it is a function which should return an object. This
+  object will be associated to the file in the gridfs collection. The
   filename will be unique for that object value. This objects is
-  stored within the metadata for the file.
+  stored within the metadata for the file in the gridfs. The function will
+  receive as argument the request object `req`. For instance, the following
+  function build the key object from the url query parameter id:
+
+```javascript
+function getKeyMetadata(req) {
+  return {id: req.query.id};
+}
+```
+
 * `getOtherMetadata`: it is a function which should return an object,
-  this object will be stored within the metadata for the file.
+  this object will be stored within the metadata for the file. The function will
+  receive as argument the request object `req`.  For instance, the following
+  function build the an extra metadata object from the query parameters tag1 and tag2:
+
+```javascript
+function getKeyMetadata(req) {
+  return {
+    tag1: req.query.tag1,
+    tag2: req.query.tag1
+    };
+}
+```
+
   
 ## http examples
 
 ```
-http --form POST localhost:3000/api/gridfs/upload file@sample_file.zip
+http --form POST localhost:3000/api/gridfs/upload?fs=input_fs&id=myid file@sample_file.zip
 ```
 
 ```
-http GET localhost:3000/api/gridfs/download?filename=sample_file.zip
+http GET localhost:3000/api/gridfs/download?fs=input_fs&filename=sample_file.zip&id=myid
+```
+
+```
+http GET localhost:3000/api/gridfs/list?fs=input_fs&id=myid
+```
+
+```
+http DELETE localhost:3000/api/gridfs/delete?fs=input_fs&filename=sample_file.zip&id=myid
 ```
 
 ## Tests

@@ -5,13 +5,11 @@ const chakram = require('chakram');
 const {expect} = chakram;
 const fs = require('fs');
 const path = require('path');
+const {HTTP200, HTTP400, HTTP404} = require('../api/constants');
 
 process.env.NODE_ENV = 'test';
 
 const service = require('./fixture/service');
-const HTTP200 = 200;
-const HTTP403 = 403;
-const HTTP404 = 404;
 
 describe('USER-AUTH-JSONRPC', () => {
   let url = '';
@@ -48,12 +46,12 @@ describe('USER-AUTH-JSONRPC', () => {
 
   describe('UPLOAD', () => {
 
-    it('return 403 on POST /api/gridfs/upload?fs=unknown', () => {
+    it('return 400 on POST /api/gridfs/upload?fs=unknown', () => {
       const response = chakram.post(`${url}/upload?fs=unknown`);
 
-      expect(response).to.have.status(HTTP403);
+      expect(response).to.have.status(HTTP400);
       after(() => {
-        console.log(response.valueOf().body);
+        // console.log(response.valueOf().body);
       });
       return chakram.wait();
     });
@@ -69,7 +67,7 @@ describe('USER-AUTH-JSONRPC', () => {
     });
 
     it('return 200 on POST /api/gridfs/upload with no file', () => {
-      const response = chakram.post(`${url}/upload`);
+      const response = chakram.post(`${url}/upload?fs=input&id=myid&tag=mytag`);
 
       expect(response).to.have.status(HTTP200);
       expect(response)
@@ -88,7 +86,7 @@ describe('USER-AUTH-JSONRPC', () => {
       const file = path.resolve(__dirname, './fixture/data/sample_file.txt');
 
       /* eslint no-void: 0 */
-      const response = chakram.post(`${url}/upload`, void 0, {
+      const response = chakram.post(`${url}/upload?fs=input&id=myid&tag=mytag`, void 0, {
         formData: {file: fs.createReadStream(file)},
         headers: {'Content-Type': 'multipart/form-data'}
       });
@@ -111,7 +109,7 @@ describe('USER-AUTH-JSONRPC', () => {
       const file = path.resolve(__dirname, './fixture/data/sample_file.txt');
 
       /* eslint no-void: 0 */
-      const response = chakram.post(`${url}/upload`, void 0, {
+      const response = chakram.post(`${url}/upload?fs=input&id=myid&tag=mytag`, void 0, {
         formData: {
           file1: fs.createReadStream(file),
           file2: fs.createReadStream(file)
@@ -135,10 +133,10 @@ describe('USER-AUTH-JSONRPC', () => {
   });
 
   describe('DOWNLOAD', () => {
-    it('return 403 on GET /api/gridfs/download?fs=unknown', () => {
-      const response = chakram.get(`${url}/download?fs=unknown`);
+    it('return 400 on GET /api/gridfs/download?fs=unknown', () => {
+      const response = chakram.get(`${url}/download?fs=unknown&id=myid`);
 
-      expect(response).to.have.status(HTTP403);
+      expect(response).to.have.status(HTTP400);
       after(() => {
         // console.log(response.valueOf().body);
       });
@@ -146,7 +144,7 @@ describe('USER-AUTH-JSONRPC', () => {
     });
 
     it('return 404 on POST /api/gridfs/download', () => {
-      const response = chakram.post(`${url}/download`);
+      const response = chakram.post(`${url}/download?fs=input&id=myid`);
 
       expect(response).to.have.status(HTTP404);
       after(() => {
@@ -155,10 +153,21 @@ describe('USER-AUTH-JSONRPC', () => {
       return chakram.wait();
     });
 
-    it('return 404 on GET /api/gridfs/download no filename query', () => {
-      const response = chakram.get(`${url}/download`);
+    it('return 400 on GET /api/gridfs/download no filename query', () => {
+      const response = chakram.get(`${url}/download?fs=input&id=myid`);
 
-      expect(response).to.have.status(HTTP403);
+      expect(response).to.have.status(HTTP400);
+      after(() => {
+        // console.log(response.valueOf().body);
+      });
+      return chakram.wait();
+    });
+
+    it('return 404 on GET and key not found', () => {
+      const response = chakram.get(`${url}/download?fs=input&filename=sample_file.txt&id=badid`);
+
+      expect(response).to.have.status(HTTP404);
+
       after(() => {
         // console.log(response.valueOf().body);
       });
@@ -166,7 +175,7 @@ describe('USER-AUTH-JSONRPC', () => {
     });
 
     it('return 200 & success on GET /api/gridfs/download', () => {
-      const response = chakram.get(`${url}/download?filename=sample_file.txt`);
+      const response = chakram.get(`${url}/download?fs=input&filename=sample_file.txt&id=myid`);
 
       expect(response).to.have.status(HTTP200);
 
@@ -181,22 +190,45 @@ describe('USER-AUTH-JSONRPC', () => {
 
   describe('LIST', () => {
     it('return 200 on GET /api/gridfs/list', () => {
-      const response = chakram.get(`${url}/list`);
+      const response = chakram.get(`${url}/list?fs=input&id=myid`);
 
       expect(response).to.have.status(HTTP200);
       after(() => {
-        // console.log(response.valueOf().body);
+        // console.log(JSON.stringify(response.valueOf().body, null, '  '));
       });
       return chakram.wait().then(() => {
         const {body} = response.valueOf();
 
-        console.log(body);
+        // console.log(body);
         expect(body).to.have.keys([
           'success',
           'files'
         ]);
         expect(body.files).to.be.a('array');
       });
+    });
+  });
+
+  describe('DELETE', () => {
+    it('return 200 & success on DELETE /api/gridfs/delete', () => {
+      const response = chakram.delete(`${url}/delete?fs=input&filename=sample_file.txt&id=myid`);
+
+      expect(response).to.have.status(HTTP200);
+
+      after(() => {
+        // console.log(response.valueOf().body);
+      });
+      return chakram.wait();
+    });
+    it('return 404 & success on DELETE /api/gridfs/delete (just deleted)', () => {
+      const response = chakram.delete(`${url}/delete?fs=input&filename=sample_file.txt&id=myid`);
+
+      expect(response).to.have.status(HTTP404);
+
+      after(() => {
+        // console.log(response.valueOf().body);
+      });
+      return chakram.wait();
     });
   });
 
