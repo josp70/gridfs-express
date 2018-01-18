@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha ./test",
-    "lint": "eslint *.js api/** test/**"
+    "lint": "eslint *.js api/** test/**",
+    "preversion": "npm run lint && npm test",
+    "version": "echo 'preversion passed'",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
