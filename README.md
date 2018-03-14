@@ -1,9 +1,9 @@
 gridfs-express
 =========
-![build status](https://gitlab.com/jorge.suit/gridfs-express/badges/master/build.svg)
+[![build status](https://gitlab.com/jorge.suit/gridfs-express/badges/master/build.svg)](https://gitlab.com/jorge.suit/gridfs-express/badges/master/build.svg)
 
-Module to configure an express router in order to upload/download
-files to/from a modgodb grid.
+Provide an API REST which support upload/download files to/from a modgodb grid. This package
+enable the user to define the API on a given Express router.
 
 ## Installation
 
@@ -40,23 +40,22 @@ gridfs(routerAPI, {
 
 app.use('/api/gridfs', routerAPI);
 ```
+The function `gridfs` define the following API on the given router object.
 
-When we invoke `gridfs` on an express router the following endpoints
-are defined for that router:
+| route                     | verb   | URL parameters                   | description                   |
+| ------------------------- | ------ | -------------------------------- | ----------------------------- |
+| /api/gridfs               | GET    | fs=[string]                      | get all files metadata        |
+| /api/gridfs/:id           | GET    | fs=[string]                      | get a single file metadata    |
+| /api/gridfs/metadata      | GET    | fs=[string]<br>filename=[string] | get a single file metadata    |
+| /api/gridfs/download/:id  | GET    | fs=[string]                      | download a single file        |
+| /api/gridfs/download/file | GET    | fs=[string]<br>name=[string]     | download a single file        |
+| /api/gridfs               | POST   | fs=[string]                      | upload a new file             |
+| /api/gridfs/:id           | DELETE | fs=[string]                      | delete a single file          |
+| /api/gridfs/metadata      | DELETE | fs=[string]<br>filename=[string] | delete a single file metadata |
+| /api/gridfs/:id           | PATCH  | fs=[string]                      | modify a sigle file metadata  |
+| /api/gridfs/metadata      | PATCH  | fs=[string]<br>filename=[string] | modify a single file metadata |
 
-* `POST /upload`: the attached files are uploaded to the gridfs. It is
-  possible to specify a collection name in the query parameter `fs`
-  and a key fields to used when inserting the file, this allow to
-  upload the same filename if different keys are provided.
-* `GET /download`: retrieve the file given the query parameters
-  `filename` and `fs`.
-* `GET /list`: list the files uploaded
-* `DELETE /delete`: remove from the gridfs the file provided in query
-  parameters `filename` and `fs`.
-  
-It is up to the service to compute a key object to differentiate files
-with the same name, this can be normally compute form the request
-(query parameters or JWT)
+Note that the path `/api/gridfs` depends on the user election.
 
 ## Options
 
@@ -72,7 +71,7 @@ to get the mongodb connection:
 
 Other members which are optional are:
 
-* `fsCollections`: it is and array of string contained the allowed collection
+* `fsCollections`: it is an array of string which contains the allowed collection
   names to be used in the query parameter `fs`. This array is used to
   validate the query parameter `fs`.
 * `getKeyMetadata`: it is a function which should return an object. This
@@ -105,22 +104,6 @@ function getKeyMetadata(req) {
   
 ## http examples
 
-```
-http --form POST localhost:3000/api/gridfs/upload?fs=input_fs&id=myid file@sample_file.zip
-```
-
-```
-http GET localhost:3000/api/gridfs/download?fs=input_fs&filename=sample_file.zip&id=myid
-```
-
-```
-http GET localhost:3000/api/gridfs/list?fs=input_fs&id=myid
-```
-
-```
-http DELETE localhost:3000/api/gridfs/delete?fs=input_fs&filename=sample_file.zip&id=myid
-```
-
 ## Tests
 
   `npm test`
@@ -131,3 +114,4 @@ In lieu of a formal style guide, take care to maintain the existing
 coding style. Add unit tests for any new or changed
 functionality. Lint and test your code.
 
+[![Foo](http://www.google.com.au/images/nav_logo7.png)](http://google.com.au/)

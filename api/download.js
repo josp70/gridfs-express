@@ -10,7 +10,7 @@ function define(router) {
       bucket,
       keyMetadata,
       cursor
-    ] = gridBucket.build(req, req.query.filename);
+    ] = gridBucket.build(req, {filename: req.query.filename});
 
     return cursor.next().then((doc) => {
       if (doc === null) {

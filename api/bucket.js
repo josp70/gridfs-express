@@ -1,9 +1,9 @@
-const mongodb = require('mongodb');
+const {GridFSBucket, ObjectId} = require('mongodb');
 const dot = require('dot-object');
 const state = require('./state');
 
-function build(req, filename) {
-  const bucket = new mongodb.GridFSBucket(state.getDb(), {
+function build(req, id) {
+  const bucket = new GridFSBucket(state.getDb(), {
     'bucketName': req.query.fs
   });
   const metadata = state.getKeyMetadata(req);
@@ -15,8 +15,12 @@ function build(req, filename) {
   // the filter must be in dot notation
   const filter = dot.dot(keyMetadata);
 
-  if (filename) {
-    filter.filename = filename;
+  if (id) {
+    if (id._id) {
+      filter._id = new ObjectId(id._id);
+    } else if (id.filename) {
+      filter.filename = id.filename;
+    }
   }
 
   const cursor = bucket.find(filter);

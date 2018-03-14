@@ -11,7 +11,7 @@ function gridfsInsert(req, file) {
     bucket,
     keyMetadata,
     cursor
-  ] = gridBucket.build(req, file.name);
+  ] = gridBucket.build(req, {filename: file.name});
 
   return cursor.toArray().then((docs) => {
     if (docs.length > 0) {
@@ -37,7 +37,10 @@ function gridfsInsert(req, file) {
       })
       .on('finish', () => {
         fs.unlink(file.path, () => {
-          resolve(file.name);
+          resolve({
+            id,
+            filename: file.name
+          });
         });
       });
     });
@@ -64,9 +67,11 @@ function define(router) {
         console.log(`file already provided: ${file.name}`);
       } else {
         filesReceived.push(file.name);
-        const promiseInsert = gridfsInsert(req, file);
+        if (filesReceived.length === 1) {
+          const promiseInsert = gridfsInsert(req, file);
 
-        filesUploaded.push(promiseInsert);
+          filesUploaded.push(promiseInsert);
+        }
       }
     });
 
@@ -77,11 +82,17 @@ function define(router) {
 
     // once all the files have been uploaded, send a response to the client
     form.on('end', () => {
-      Promise.all(filesUploaded)
-      .then(() => res.json({
-        success: true,
-        uploaded: filesReceived
-      }));
+      if (filesUploaded[0]) {
+        filesUploaded[0].then((uploaded) => res.json({
+          success: true,
+          uploaded
+        }));
+      } else {
+        res.json({
+          success: true,
+          uploaded: []
+        });
+      }
     });
 
     // parse the incoming request containing the form data

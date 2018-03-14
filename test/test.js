@@ -96,7 +96,9 @@ describe('USER-AUTH-JSONRPC', () => {
       .to.comprise
       .json({
         success: true,
-        uploaded: ['sample_file.txt']
+        uploaded: {
+          filename: 'sample_file.txt'
+        }
       });
       after(() => {
         // console.log(response.valueOf().body);
@@ -122,7 +124,9 @@ describe('USER-AUTH-JSONRPC', () => {
       .to.comprise
       .json({
         success: true,
-        uploaded: ['sample_file.txt']
+        uploaded: {
+          filename: 'sample_file.txt'
+        }
       });
       after(() => {
         // console.log(response.valueOf().body);
