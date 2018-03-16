@@ -1,39 +1,44 @@
 const gridBucket = require('./bucket');
-const paramFs = require('./param-fs');
-const paramFilename = require('./param-filename');
-const apiUtil = require('./utils');
-const {HTTP404, HTTP500} = require('./constants');
+const queryFs = require('./query-fs');
+const queryType = require('./query-key');
+const Boom = require('boom');
 
 function define(router) {
-  router.delete('/delete', paramFs.middleware, paramFilename.middleware, (req, res) => {
+  router.delete('/:file_id', queryFs.middleware, queryType.middleware, (req, res, next) => {
+    let key = {};
+
+    if (req.query.key === 'id') {
+      key = {_id: req.params.file_id};
+    } else {
+      key = {filename: req.params.file_id};
+    }
     const [
       bucket,
       keyMetadata,
       cursor
-    ] = gridBucket.build(req, req.query.filename);
+    ] = gridBucket.build(req, key);
 
-    return cursor.next().then((doc) => {
+    cursor.next().then((doc) => {
       if (doc === null) {
-        return res.status(HTTP404).json(Object.assign({
-          success: false,
-          message: 'file not found',
-          filename: req.query.filename
-        }, keyMetadata));
+        return Promise.reject(Boom.notFound('file not found', {
+          key,
+          keyMetadata
+        }));
       }
-      return bucket.delete(doc._id, (err) => {
-        if (apiUtil.isValue(err)) {
-          res.status(HTTP500).json({
-            success: false,
-            filename: req.query.filename,
-            error: err
-          });
-        } else {
-          res.json(Object.assign({
-            success: true,
-            filename: req.query.filename
-          }, keyMetadata));
-        }
-      });
+      return bucket.delete(doc._id);
+    })
+    .then(() => res.json(key))
+    .catch((error) => {
+      if (error.isBoom) {
+        return next(error);
+      }
+      const data = {
+        key,
+        keyMetadata,
+        error
+      };
+
+      return next(Boom.badImplementation(error.message, data));
     });
   });
 }

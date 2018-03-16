@@ -4,14 +4,16 @@ const gridBucket = require('./bucket');
 const {ObjectID} = mongodb;
 const state = require('./state');
 const formidable = require('formidable');
-const paramFs = require('./param-fs');
+const queryFs = require('./query-fs');
+const constants = require('./constants');
+const Boom = require('boom');
 
 function gridfsInsert(req, file) {
   const [
     bucket,
     keyMetadata,
     cursor
-  ] = gridBucket.build(req, file.name);
+  ] = gridBucket.build(req, {filename: file.name});
 
   return cursor.toArray().then((docs) => {
     if (docs.length > 0) {
@@ -37,7 +39,10 @@ function gridfsInsert(req, file) {
       })
       .on('finish', () => {
         fs.unlink(file.path, () => {
-          resolve(file.name);
+          resolve({
+            _id: id,
+            filename: file.name
+          });
         });
       });
     });
@@ -45,7 +50,7 @@ function gridfsInsert(req, file) {
 }
 
 function define(router) {
-  router.post('/upload', paramFs.middleware, (req, res) => {
+  router.post('', queryFs.middleware, (req, res, next) => {
 
     // create an incoming form object
     const form = new formidable.IncomingForm();
@@ -64,24 +69,26 @@ function define(router) {
         console.log(`file already provided: ${file.name}`);
       } else {
         filesReceived.push(file.name);
-        const promiseInsert = gridfsInsert(req, file);
+        if (filesReceived.length === 1) {
+          const promiseInsert = gridfsInsert(req, file);
 
-        filesUploaded.push(promiseInsert);
+          filesUploaded.push(promiseInsert);
+        }
       }
     });
 
     // log any errors that occur
     form.on('error', (err) => {
-      console.log(`An error has occured: \n' + ${err}`);
+      console.log('An error has occured:', err);
     });
 
     // once all the files have been uploaded, send a response to the client
     form.on('end', () => {
-      Promise.all(filesUploaded)
-      .then(() => res.json({
-        success: true,
-        uploaded: filesReceived
-      }));
+      if (filesUploaded[0]) {
+        return filesUploaded[0]
+        .then((uploaded) => res.status(constants.HTTP201).json(uploaded));
+      }
+      return next(Boom.badRequest('No file provided'));
     });
 
     // parse the incoming request containing the form data
