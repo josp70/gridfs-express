@@ -33,6 +33,7 @@
     "nyc": "^11.4.1"
   },
   "dependencies": {
+    "boom": "^7.2.0",
     "dot-object": "^1.7.0",
     "express": "^4.16.2",
     "formidable": "^1.1.1",

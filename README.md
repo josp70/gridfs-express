@@ -42,18 +42,17 @@ app.use('/api/gridfs', routerAPI);
 ```
 The function `gridfs` define the following API on the given router object.
 
-| route                     | verb   | URL parameters                   | description                   |
-| ------------------------- | ------ | -------------------------------- | ----------------------------- |
-| /api/gridfs               | GET    | fs=[string]                      | get all files metadata        |
-| /api/gridfs/:id           | GET    | fs=[string]                      | get a single file metadata    |
-| /api/gridfs/metadata      | GET    | fs=[string]<br>filename=[string] | get a single file metadata    |
-| /api/gridfs/download/:id  | GET    | fs=[string]                      | download a single file        |
-| /api/gridfs/download/file | GET    | fs=[string]<br>name=[string]     | download a single file        |
-| /api/gridfs               | POST   | fs=[string]                      | upload a new file             |
-| /api/gridfs/:id           | DELETE | fs=[string]                      | delete a single file          |
-| /api/gridfs/metadata      | DELETE | fs=[string]<br>filename=[string] | delete a single file metadata |
-| /api/gridfs/:id           | PATCH  | fs=[string]                      | modify a sigle file metadata  |
-| /api/gridfs/metadata      | PATCH  | fs=[string]<br>filename=[string] | modify a single file metadata |
+| route                    | verb   | URL parameters                                               | description                    |
+| ------------------------ | ------ | ------------------------------------------------------------ | ------------------------------ |
+| /api/gridfs              | GET    | fs=[string]                                                  | get all files info             |
+| /api/gridfs/:id          | GET    | fs=[string]<br>key=['filename','id']<br>type=['info','data'] | get a single file info or data |
+| /api/gridfs              | POST   | fs=[string]                                                  | upload a new file              |
+| /api/gridfs/:id          | DELETE | fs=[string]<br>key=['filename','id']                         | delete a single file           |
+| /api/gridfs/:id/metadata | PATCH  | fs=[string]<br>key=['filename','id']                         | modify a sigle file metadata   |
+
+The parameter `:id` is considered either as an identifier or
+filename depending on the value of query parameter `key` which
+could take on of the values `id` or `filename` respectively.
 
 Note that the path `/api/gridfs` depends on the user election.
 
@@ -87,10 +86,12 @@ function getKeyMetadata(req) {
 }
 ```
 
-* `getOtherMetadata`: it is a function which should return an object,
+* `getMetadata`: it is a function which should return an object,
   this object will be stored within the metadata for the file. The function will
-  receive as argument the request object `req`.  For instance, the following
-  function build the an extra metadata object from the query parameters tag1 and tag2:
+  receive as argument the request object `req`. The returned object should not
+  contain the keys returned from getKeyMetadata, they will be discarded.
+  For instance, the following function build the an extra metadata object from
+  the query parameters tag1 and tag2:
 
 ```javascript
 function getKeyMetadata(req) {
@@ -100,7 +101,6 @@ function getKeyMetadata(req) {
     };
 }
 ```
-
   
 ## http examples
 
@@ -113,5 +113,3 @@ function getKeyMetadata(req) {
 In lieu of a formal style guide, take care to maintain the existing
 coding style. Add unit tests for any new or changed
 functionality. Lint and test your code.
-
-[![Foo](http://www.google.com.au/images/nav_logo7.png)](http://google.com.au/)

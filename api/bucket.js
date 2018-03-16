@@ -1,6 +1,7 @@
 const {GridFSBucket, ObjectId} = require('mongodb');
 const dot = require('dot-object');
 const state = require('./state');
+const Boom = require('boom');
 
 function build(req, id) {
   const bucket = new GridFSBucket(state.getDb(), {
@@ -17,7 +18,11 @@ function build(req, id) {
 
   if (id) {
     if (id._id) {
-      filter._id = new ObjectId(id._id);
+      try {
+        filter._id = new ObjectId(id._id);
+      } catch (error) {
+        throw Boom.badRequest(error.message, id);
+      }
     } else if (id.filename) {
       filter.filename = id.filename;
     }

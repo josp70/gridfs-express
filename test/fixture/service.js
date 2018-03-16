@@ -1,6 +1,9 @@
 const express = require('express');
 const mongodb = require('mongodb');
+const bodyParser = require('body-parser');
 const app = express();
+
+
 const expressListRoutes = require('express-list-routes');
 
 const gridfs = require('../../index');
@@ -14,12 +17,21 @@ const routerAPI = new express.Router();
 gridfs(routerAPI, {
   getDb: () => db,
   getKeyMetadata: (req) => ({id: req.query.id}),
-  getOtherMetadata: (req) => ({tag: req.query.tag}),
+  getOtherMetadata: (req) => req.body,
   fsCollections: [
     'input',
     'output'
   ]
 });
+
+app.use(bodyParser.json());
+
+/*
+app.use((req, res, next) => {
+  console.log('[BODY] --', req.body);
+  next();
+});
+*/
 
 app.use('/api/gridfs', routerAPI);
 
