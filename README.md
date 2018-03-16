@@ -14,32 +14,41 @@ enable the user to define the API on a given Express router.
 ```javascript
 const express = require('express');
 const mongodb = require('mongodb');
+const bodyParser = require('body-parser');
+const expressListRoutes = require('express-list-routes');
+const gridfs = require('gridfs-express');
 
 const app = express();
-
-const gridfs = require('gridfs-express');
 
 const url = "mongodb://localhost:27017/gridfs_test";
 
 let db;
 
-mongodb.MongoClient.connect(url, function(err, database) {
-    if(err) throw err;
-
-    db = database;
-    // Start the application after the database connection is ready
-    app.listen(3000);
-    console.log("Listening on port 3000");
-});
-
 const routerAPI = express.Router();
 
 gridfs(routerAPI, {
-    getDb: () => {return db}
+  getDb: () => db,
+  getKeyMetadata: (req) => ({id: req.query.id}),
+  getOtherMetadata: (req) => req.body,
+  fsCollections: [
+    'input',
+    'output'
+  ]
 });
 
+app.use(bodyParser.json());
 app.use('/api/gridfs', routerAPI);
+expressListRoutes({prefix: '/api/gridfs'}, 'API:', routerAPI);
+
+mongodb.MongoClient.connect(url, function(err, database) {
+  if(err) throw err;
+
+  db = database;
+  // Start the application after the database connection is ready
+  app.listen(3000);
+});
 ```
+
 The function `gridfs` define the following API on the given router object.
 
 | route                    | verb   | URL parameters                                               | description                    |
@@ -58,13 +67,13 @@ Note that the path `/api/gridfs` depends on the user election.
 
 ## Options
 
-The second arguement to the function `gridfs` is an object with options
-to conigure the endpoints. It is required to provide a function member
+The second argument to the function `gridfs` is an object with options
+to configure the endpoints. It is required to provide a function member
 to get the mongodb connection:
 
 ```javascript
 {
-    getDb: () => {return db}
+  getDb: () => {return db}
 }
 ```
 
@@ -98,7 +107,7 @@ function getKeyMetadata(req) {
   return {
     tag1: req.query.tag1,
     tag2: req.query.tag1
-    };
+  };
 }
 ```
   
