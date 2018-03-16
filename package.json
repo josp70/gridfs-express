@@ -1,7 +1,7 @@
 {
   "name": "gridfs-express",
   "readmeFilename": "README0.md",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "node package to mount a gridfs API on an express router",
   "main": "index.js",
   "scripts": {
