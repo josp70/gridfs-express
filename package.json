@@ -1,6 +1,6 @@
 {
   "name": "gridfs-express",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "node package to mount a gridfs API on an express router",
   "main": "index.js",
   "scripts": {
