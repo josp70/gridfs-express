@@ -103,7 +103,7 @@ function getKeyMetadata(req) {
   the query parameters tag1 and tag2:
 
 ```javascript
-function getKeyMetadata(req) {
+function getOtherMetadata(req) {
   return {
     tag1: req.query.tag1,
     tag2: req.query.tag1
