@@ -7,7 +7,7 @@ enable the user to define the API on a given Express router.
 
 ## Installation
 
-  `npm install jsonrpc2-express`
+  `npm install gridfs-express`
 
 ## Usage
 
@@ -110,7 +110,7 @@ function getKeyMetadata(req) {
   };
 }
 ```
-  
+
 ## http examples
 
 ## Tests
