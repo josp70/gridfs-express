@@ -1,6 +1,5 @@
 const queryFs = require('./query-fs');
 const queryKey = require('./query-key');
-const queryType = require('./query-type');
 const gridBucket = require('./bucket');
 const Boom = require('boom');
 
@@ -16,7 +15,6 @@ function define(router) {
   router.get('/:file_id',
             queryFs.middleware,
             queryKey.middleware,
-            queryType.middleware,
             (req, res, next) => {
     let key = {};
 
@@ -29,10 +27,6 @@ function define(router) {
 
     cursor.toArray().then((documents) => {
       if (documents.length) {
-        if (req.query.type === 'info') {
-          // return only file info
-          return res.json(documents[0]);
-        }
         res.set('Content-Disposition', `attachment; filename=${documents[0].filename}`);
 
         /** set the proper content type */
@@ -40,6 +34,27 @@ function define(router) {
 
         /** return response */
         return bucket.openDownloadStream(documents[0]._id).pipe(res);
+      }
+      return next(Boom.notFound('file not found', key));
+    });
+  });
+
+  router.get('/:file_id/info',
+            queryFs.middleware,
+            queryKey.middleware,
+            (req, res, next) => {
+    let key = {};
+
+    if (req.query.key === 'id') {
+      key = {_id: req.params.file_id};
+    } else {
+      key = {filename: req.params.file_id};
+    }
+    const [, , cursor] = gridBucket.build(req, key);
+
+    cursor.toArray().then((documents) => {
+      if (documents.length) {
+          return res.json(documents[0]);
       }
       return next(Boom.notFound('file not found', key));
     });

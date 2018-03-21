@@ -18,7 +18,7 @@ describe('GRIDFS-EXPRESS', () => {
   const anyId = '5aa8fe3fc1ff1a2330a6acca';
 
   before('start server', (done) => {
-    service.start();
+    service.start('/api/gridfs/v2');
     service.app.on('ready', () => {
       url = service.getEndPoint();
       done();
@@ -175,8 +175,8 @@ describe('GRIDFS-EXPRESS', () => {
   });
 
   describe('GET SINGLE FILE INFO', () => {
-    it('return 400 on GET /api/gridfs/:file_id no query fs', () => {
-      const response = chakram.get(`${url}/${anyId}`);
+    it('return 400 on GET /api/gridfs/:file_id/info no query fs', () => {
+      const response = chakram.get(`${url}/${anyId}/info`);
 
       expect(response).to.have.status(HTTP400);
       expect(response).to.comprise.json({
@@ -197,30 +197,8 @@ describe('GRIDFS-EXPRESS', () => {
       return chakram.wait();
     });
 
-    it('return 400 on GET /api/gridfs/:file_id?type=unknown', () => {
-      const response = chakram.get(`${url}/${anyId}?fs=input&type=unknown`);
-
-      expect(response).to.have.status(HTTP400);
-      expect(response).to.comprise.json({
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'Invalid query parameter type=unknown',
-        data: {
-          validTypes: [
-            'data',
-            'info'
-          ]
-        }
-      });
-
-      after(() => {
-        // console.log(response.valueOf().body);
-      });
-      return chakram.wait();
-    });
-
-    it('return 400 on GET /api/gridfs/:file_id?key=unknown', () => {
-      const response = chakram.get(`${url}/${anyId}?fs=input&key=unknown`);
+    it('return 400 on GET /api/gridfs/:file_id/info?key=unknown', () => {
+      const response = chakram.get(`${url}/${anyId}/info?fs=input&key=unknown`);
 
       expect(response).to.have.status(HTTP400);
       expect(response).to.comprise.json({
@@ -241,8 +219,8 @@ describe('GRIDFS-EXPRESS', () => {
       return chakram.wait();
     });
 
-    it('return 400 on GET /api/gridfs/invalid_id', () => {
-      const response = chakram.get(`${url}/invalid_id?fs=input&id=myid&key=id&type=info`);
+    it('return 400 on GET /api/gridfs/invalid_id/info', () => {
+      const response = chakram.get(`${url}/invalid_id/info?fs=input&id=myid&key=id`);
 
       expect(response).to.have.status(HTTP400);
       after(() => {
@@ -282,7 +260,7 @@ describe('GRIDFS-EXPRESS', () => {
     });
 
     it('return 404 on GET /api/gridfs/not-found.txt', () => {
-      const response = chakram.get(`${url}/not-found.txt?fs=input&id=myid&type=info&key=filename`);
+      const response = chakram.get(`${url}/not-found.txt?fs=input&id=myid&key=filename`);
 
       expect(response).to.have.status(HTTP404);
       expect(response).to.comprise.json({
@@ -300,8 +278,8 @@ describe('GRIDFS-EXPRESS', () => {
       return chakram.wait();
     });
 
-    it('return 200 on GET /api/gridfs/sample_file.txt', () => {
-      const response = chakram.get(`${url}/sample_file.txt?fs=input&id=myid&type=info&key=filename`);
+    it('return 200 on GET /api/gridfs/sample_file.txt/info', () => {
+      const response = chakram.get(`${url}/sample_file.txt/info?fs=input&id=myid&key=filename`);
 
       expect(response).to.have.status(HTTP200);
       after(() => {
@@ -324,8 +302,8 @@ describe('GRIDFS-EXPRESS', () => {
       });
     });
 
-    it('return 200 on GET /api/gridfs/:file_id', () => {
-      const response = chakram.get(`${url}/${anId}?fs=input&id=myid&type=info&key=id`);
+    it('return 200 on GET /api/gridfs/:file_id/info', () => {
+      const response = chakram.get(`${url}/${anId}/info?fs=input&id=myid&key=id`);
 
       expect(response).to.have.status(HTTP200);
       after(() => {
@@ -348,8 +326,8 @@ describe('GRIDFS-EXPRESS', () => {
       });
     });
 
-    it('return 200 on download GET /api/gridfs type=data key=filename', () => {
-      const response = chakram.get(`${url}/sample_file.txt?fs=input&id=myid&type=data&key=filename`);
+    it('return 200 on download GET /api/gridfs/:file_id key=filename', () => {
+      const response = chakram.get(`${url}/sample_file.txt?fs=input&id=myid&key=filename`);
 
       expect(response).to.have.status(HTTP200);
 
@@ -361,8 +339,8 @@ describe('GRIDFS-EXPRESS', () => {
       });
     });
 
-    it('return 200 on download GET /api/gridfs type=data key=id', () => {
-      const response = chakram.get(`${url}/${anId}?fs=input&id=myid&type=data`);
+    it('return 200 on download GET /api/gridfs/:file_id key=id', () => {
+      const response = chakram.get(`${url}/${anId}?fs=input&id=myid`);
 
       expect(response).to.have.status(HTTP200);
 
@@ -377,7 +355,7 @@ describe('GRIDFS-EXPRESS', () => {
   });
 
   describe('PATCH metadata', () => {
-    it('return 200 on patch /api/gridfs/:filename/metadata', () => {
+    it('return 200 on patch /api/gridfs/:file_id/metadata&key=filename', () => {
       const response = chakram.patch(`${url}/sample_file2.txt/metadata?fs=input&id=myid&key=filename`, {
         field1: 'hello',
         field2: 'world'
