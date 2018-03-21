@@ -5,6 +5,8 @@ gridfs-express
 Provide an API REST which support upload/download files to/from a modgodb grid. This package
 enable the user to define the API on a given Express router.
 
+A complete example of a service using this package can be found at [example-gridfs-express](https://gitlab.com/jorge.suit/example-gridfs-express) 
+
 ## Installation
 
   `npm install gridfs-express`
@@ -51,13 +53,15 @@ mongodb.MongoClient.connect(url, function(err, database) {
 
 The function `gridfs` define the following API on the given router object.
 
-| route                    | verb   | URL parameters                                               | description                    |
-| ------------------------ | ------ | ------------------------------------------------------------ | ------------------------------ |
-| /api/gridfs              | GET    | fs=[string]                                                  | get all files info             |
-| /api/gridfs/:id          | GET    | fs=[string]<br>key=['filename','id']<br>type=['info','data'] | get a single file info or data |
-| /api/gridfs              | POST   | fs=[string]                                                  | upload a new file              |
-| /api/gridfs/:id          | DELETE | fs=[string]<br>key=['filename','id']                         | delete a single file           |
-| /api/gridfs/:id/metadata | PATCH  | fs=[string]<br>key=['filename','id']                         | modify a sigle file metadata   |
+| route                    | verb   | URL parameters                       | description                                |
+| ------------------------ | ------ | ------------------------------------ | ------------------------------------------ |
+| /api/gridfs              | GET    | fs=[string]                          | get all files info                         |
+| /api/gridfs/:id          | GET    | fs=[string]<br>key=['filename','id'] | get a single file                          |
+| /api/gridfs/:id/info     | GET    | fs=[string]<br>key=['filename','id'] | get a sigle file, include a metadata field |
+| /api/gridfs              | POST   | fs=[string]                          | upload a new file                          |
+| /api/gridfs/:id          | DELETE | fs=[string]<br>key=['filename','id'] | delete a single file                       |
+| /api/gridfs/:id/metadata | PATCH  | fs=[string]<br>key=['filename','id'] | modify the metadata field                  |
+
 
 The parameter `:id` is considered either as an identifier or
 filename depending on the value of query parameter `key` which
@@ -110,9 +114,6 @@ function getOtherMetadata(req) {
   };
 }
 ```
-
-## http examples
-
 ## Tests
 
   `npm test`

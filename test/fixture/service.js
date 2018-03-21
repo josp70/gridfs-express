@@ -33,20 +33,18 @@ app.use((req, res, next) => {
 });
 */
 
-app.use('/api/gridfs', routerAPI);
-
 let server = null;
 
 exports.app = app;
 
-exports.getEndPoint = () => `http://localhost:${server.address().port}/api/gridfs`;
-
-exports.start = () => mongodb.MongoClient.connect(dburl)
+exports.start = (path) => mongodb.MongoClient.connect(dburl)
   .then((database) => {
+    app.use(path, routerAPI);
+    exports.getEndPoint = () => `http://localhost:${server.address().port}${path}`;
     db = database;
     server = app.listen(0, () => {
       console.log(`server listen on ${server.address().port}`);
-      expressListRoutes({prefix: '/api/gridfs'}, 'API:', routerAPI);
+      expressListRoutes({prefix: path}, 'API:', routerAPI);
       app.emit('ready', null);
     });
     exports.server = server;
