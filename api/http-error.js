@@ -13,10 +13,10 @@ function errorHandler (err, req, res, next) {
     });
   }
 
-  const body = err.output.payload;
+  const body = bError.output.payload;
 
   if (bError.data) {
-      body.data = err.data;
+      body.data = bError.data;
   }
   res.status(bError.output.statusCode).json(body);
 }
