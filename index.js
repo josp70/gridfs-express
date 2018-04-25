@@ -63,6 +63,13 @@ module.exports = (router, options) => {
     throw new Error('options.getOtherMetadata must be a function');
   }
 
+  if (options.maxFileSize) {
+    if (typeof options.maxFileSize !== 'number') {
+      throw new Error('options.maxFileSize must be a number');
+    }
+    state.maxFileSize = options.maxFileSize;
+  }
+
   createTempDir();
 
   apiPost.define(router);

@@ -42,7 +42,9 @@ exports.start = (path) => mongodb.MongoClient.connect(dburl)
     app.use(path, routerAPI);
     exports.getEndPoint = () => `http://localhost:${server.address().port}${path}`;
     db = database;
-    server = app.listen(0, () => {
+    const port = process.env.PORT || 0;
+
+    server = app.listen(port, () => {
       console.log(`server listen on ${server.address().port}`);
       expressListRoutes({prefix: path}, 'API:', routerAPI);
       app.emit('ready', null);
@@ -59,5 +61,5 @@ exports.close = () => {
 
 /* eslint no-process-env: "off" */
 if (process.env.NODE_ENV !== 'test') {
-  exports.start();
+  exports.start('/api/gridfs/v2');
 }

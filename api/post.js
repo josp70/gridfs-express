@@ -55,6 +55,9 @@ function define(router) {
     // create an incoming form object
     const form = new formidable.IncomingForm();
 
+    if (state.maxFileSize) {
+      form.maxFileSize = state.maxFileSize;
+    }
     // store all uploads in the /uploads directory
     form.uploadDir = state.dirUploads;
 
@@ -79,7 +82,8 @@ function define(router) {
 
     // log any errors that occur
     form.on('error', (err) => {
-      console.log('An error has occured:', err);
+      console.log('form.on error:', err);
+      return next(Boom.badRequest(err.message, err));
     });
 
     // once all the files have been uploaded, send a response to the client
