@@ -80,7 +80,7 @@ function define(router) {
     // log any errors that occur
     form.on('error', (err) => {
       console.log('form.on error:', err);
-      return next(Boom.badRequest(err.message, err));
+      return next(Boom.badImplementation(err.message, err));
     });
 
     // once all the files have been uploaded, send a response to the client
