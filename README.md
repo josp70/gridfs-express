@@ -83,6 +83,7 @@ to get the mongodb connection:
 
 Other members which are optional are:
 
+* `maxFileSize`: the maximum file size allowed. The default limit is 200MB.
 * `fsCollections`: it is an array of string which contains the allowed collection
   names to be used in the query parameter `fs`. This array is used to
   validate the query parameter `fs`.

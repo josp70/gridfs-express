@@ -15,7 +15,7 @@ function errorHandler (err, req, res, next) {
 
   const body = bError.output.payload;
 
-  if (bError.data) {
+  if (bError.data && Object.keys(bError.data).length > 0) {
       body.data = bError.data;
   }
   res.status(bError.output.statusCode).json(body);
